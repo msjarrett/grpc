@@ -106,7 +106,7 @@ config_setting(
 )
 
 config_setting(
-     name = "ios",
+    name = "ios",
     values = {"apple_platform_type": "ios"},
 )
 
