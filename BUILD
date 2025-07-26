@@ -48,6 +48,19 @@ exports_files(
     visibility = ["//:__subpackages__"],
 )
 
+# Identifies a binary size sensitive client. Certain optional features may be
+# disabled to reduce the amount of linked code.
+# Set with --//:small_client
+bool_flag(
+    name = "small_client",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "small_client_flag",
+    flag_values = {":small_client": "true"},
+)
+
 config_setting(
     name = "grpc_no_ares",
     values = {"define": "grpc_no_ares=true"},
@@ -93,7 +106,7 @@ config_setting(
 )
 
 config_setting(
-    name = "ios",
+     name = "ios",
     values = {"apple_platform_type": "ios"},
 )
 
@@ -122,53 +135,47 @@ config_setting(
     values = {"define": "use_systemd=true"},
 )
 
+# Automatically disable certain deps for space-constrained clients where
+# binary size is important.
+# This includes mobile clients, and builds which request it explicitly.
+selects.config_setting_group(
+    name = "grpc_small_clients",
+    match_any = [
+        ":small_client_flag",  # --//:small_client
+        ":android",
+        ":ios",
+    ],
+)
+
 selects.config_setting_group(
     name = "grpc_no_xds",
     match_any = [
-        ":grpc_no_xds_define",
-        # In addition to disabling XDS support when --define=grpc_no_xds=true is
-        # specified, we also disable it on mobile platforms where it is not
-        # likely to be needed and where reducing the binary size is more
-        # important.
-        ":android",
-        ":ios",
+        ":grpc_no_xds_define",  # --define=grpc_no_xds=true
+        ":grpc_small_clients",
     ],
 )
 
 selects.config_setting_group(
     name = "grpc_no_ztrace",
     match_any = [
-        ":grpc_no_ztrace_define",
-        # In addition to disabling ztrace support when --define=grpc_no_ztrace=true is
-        # specified, we also disable it on mobile platforms where it is not
-        # likely to be needed and where reducing the binary size is more
-        # important.
-        ":android",
-        ":ios",
+        ":grpc_no_ztrace_define",  # --define=grpc_no_ztrace=true
+        ":grpc_small_clients",
     ],
 )
 
 selects.config_setting_group(
     name = "grpc_no_rls",
     match_any = [
-        ":grpc_no_rls_flag",
-        # Disable RLS support on mobile platforms where it is not likely to be
-        # needed and where reducing the binary size is more important.
-        ":android",
-        ":ios",
+        ":grpc_no_rls_flag",  # --//:disable_grpc_rls
+        ":grpc_small_clients",
     ],
 )
 
 selects.config_setting_group(
     name = "grpc_experiments_are_final",
     match_any = [
-        ":grpc_experiments_are_final_define",
-        # In addition to disabling experiments when
-        # --define=grpc_experiments_are_final=true is specified, we also disable
-        # them on mobile platforms where runtime configuration of experiments is unlikely to be needed and where
-        # reducing the binary size is more important.
-        ":android",
-        ":ios",
+        ":grpc_experiments_are_final_define",  # --define=grpc_experiments_are_final=true
+        ":grpc_small_clients",
     ],
 )
 
