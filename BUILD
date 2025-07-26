@@ -48,12 +48,6 @@ exports_files(
     visibility = ["//:__subpackages__"],
 )
 
-<<<<<<< HEAD
-# Identifies a binary size sensitive client. Certain optional features may be
-# disabled to reduce the amount of linked code.
-# Set with --//:small_client
-=======
->>>>>>> 154f13c13b (Define config //:grpc_small_clients for clients that prefer smaller binary sizes.)
 bool_flag(
     name = "small_client",
     build_setting_default = False,
@@ -139,11 +133,7 @@ config_setting(
 )
 
 # Automatically disable certain deps for space-constrained clients where
-<<<<<<< HEAD
-# binary size is important.
-=======
 # optional features may not be needed and binary size is more important.
->>>>>>> 154f13c13b (Define config //:grpc_small_clients for clients that prefer smaller binary sizes.)
 # This includes mobile clients, and builds which request it explicitly.
 selects.config_setting_group(
     name = "grpc_small_clients",
